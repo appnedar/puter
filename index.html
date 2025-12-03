@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Multi-Model AI Chat</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#2563eb" />
+
+  <style>
+    :root {
+      --bg: #f3f4f6;
+      --bg-soft: #e5e7eb;
+      --bg-card: #ffffff;
+      --text: #111827;
+      --text-muted: #6b7280;
+      --primary: #2563eb;
+      --primary-soft: #dbeafe;
+      --border: #e5e7eb;
+      --danger: #b91c1c;
+    }
+
+    body[data-theme="dark"] {
+      --bg: #020617;
+      --bg-soft: #0f172a;
+      --bg-card: #020617;
+      --text: #e5e7eb;
+      --text-muted: #9ca3af;
+      --primary: #3b82f6;
+      --primary-soft: rgba(37,99,235,.1);
+      --border: #1f2937;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 16px;
+      transition: background .2s ease, color .2s ease;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 1100px;
+      background: var(--bg-card);
+      border-radius: 20px;
+      box-shadow:
+        0 10px 25px rgba(15,23,42,0.18),
+        0 0 0 1px var(--border);
+      display: flex;
+      flex-direction: row;
+      overflow: hidden;
+    }
+
+    @media (max-width: 840px) {
+      .app {
+        flex-direction: column;
+        height: calc(100vh - 32px);
+      }
+    }
+
+    .sidebar {
+      width: 320px;
+      max-width: 100%;
+      padding: 16px 14px;
+      border-right: 1px solid var(--border);
+      background: var(--bg-soft);
+    }
+
+    @media (max-width: 840px) {
+      .sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+      }
+    }
+
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo-circle {
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #2563eb, #4f46e5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    .logo-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .logo-text strong {
+      font-size: 14px;
+    }
+
+    .logo-text span {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .theme-toggle {
+      border: none;
+      background: transparent;
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    .section-title {
+      font-size: 12px;
+      font-weight: 700;
+      margin: 6px 0 2px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .section-title span {
+      font-size: 11px;
+      font-weight: 400;
+      color: var(--text-muted);
+    }
+
+    label {
+      font-size: 12px;
+      font-weight: 600;
+      margin-top: 8px;
+      display: block;
+    }
+
+    select,
+    input[type="text"],
+    input[type="password"],
+    textarea {
+      width: 100%;
+      padding: 7px 9px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      color: var(--text);
+      font-size: 13px;
+      outline: none;
+    }
+
+    select:focus,
+    input:focus,
+    textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 1px var(--primary-soft);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 70px;
+    }
+
+    .small {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .input-row input {
+      flex: 1;
+    }
+
+    .btn-mini {
+      border-radius: 999px;
+      border: none;
+      padding: 5px 9px;
+      font-size: 11px;
+      cursor: pointer;
+      background: var(--primary-soft);
+      color: var(--primary);
+      white-space: nowrap;
+    }
+
+    .btn-danger {
+      background: rgba(220,38,38,0.08);
+      color: #ef4444;
+    }
+
+    .chat-header-settings {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    input[type="range"] {
+      flex: 1;
+    }
+
+    .chat {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .messages {
+      flex: 1;
+      padding: 12px 14px;
+      overflow-y: auto;
+      scroll-behavior: smooth;
+    }
+
+    .message {
+      max-width: 80%;
+      padding: 9px 11px;
+      border-radius: 14px;
+      margin-bottom: 8px;
+      font-size: 13px;
+      line-height: 1.45;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .message.user {
+      margin-left: auto;
+      background: var(--primary);
+      color: #fff;
+      border-bottom-right-radius: 4px;
+    }
+
+    .message.assistant {
+      margin-right: auto;
+      background: var(--bg-soft);
+      border-bottom-left-radius: 4px;
+    }
+
+    .message.system {
+      margin: 0 auto 8px;
+      background: transparent;
+      border-radius: 0;
+      padding: 3px 6px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .bubble-meta {
+      display: block;
+      font-size: 10px;
+      opacity: 0.8;
+      margin-bottom: 2px;
+    }
+
+    .input-area {
+      border-top: 1px solid var(--border);
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .input-row-main {
+      display: flex;
+      gap: 8px;
+    }
+
+    .input-row-main textarea {
+      flex: 1;
+      min-height: 50px;
+      max-height: 140px;
+    }
+
+    .btn-send {
+      border-radius: 999px;
+      border: none;
+      padding: 8px 12px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--primary), #4f46e5);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .btn-send:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      font-size: 11px;
+    }
+
+    .chip {
+      padding: 3px 7px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      color: var(--text-muted);
+    }
+
+    .chip.active {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: var(--primary-soft);
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%) translateY(10px);
+      background: #111827;
+      color: #f9fafb;
+      padding: 7px 11px;
+      border-radius: 999px;
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 10px 25px rgba(15,23,42,.5);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .15s ease, transform .15s ease;
+      z-index: 9999;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+      pointer-events: auto;
+    }
+
+    .toast-error {
+      border: 1px solid #ef4444;
+    }
+
+    .toast-success {
+      border: 1px solid #22c55e;
+    }
+
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 12px;
+      background: rgba(148,163,184,0.2);
+      padding: 1px 3px;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body data-theme="light">
+  <div class="app">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="section-title">
+        <span>Pengaturan</span>
+        <span id="sessionInfo"></span>
+      </div>
+
+      <label for="modelSelect">Model</label>
+      <select id="modelSelect">
+        <option value="gpt-4.1-mini">gpt-4.1-mini (hemat, cepat)</option>
+        <option value="gpt-4.1">gpt-4.1 (lebih pintar)</option>
+        <option value="gpt-4o-mini">gpt-4o-mini</option>
+      </select>
+      <div class="small">Pilih model. Multi-model tinggal ganti dari sini.</div>
+
+      <div class="slider-row">
+        <span style="font-size:11px;">Temperature</span>
+        <input type="range" id="temperature" min="0" max="2" step="0.1" value="1" />
+        <span id="tempLabel" style="font-size:11px;width:28px;text-align:right;">1.0</span>
+      </div>
+      <div class="small">Semakin tinggi → jawaban lebih kreatif / acak.</div>
+
+      <label for="systemPrompt">System prompt (opsional)</label>
+      <textarea id="systemPrompt" placeholder="Contoh: Kamu adalah asisten yang membantu menjawab dalam bahasa Indonesia."></textarea>
+
+      <label>Base URL API</label>
+      <input id="baseUrl" type="text" placeholder="https://api.openai.com" />
+      <div class="small">
+        - Default: <code>https://api.openai.com</code>  
+        - Bisa diisi proxy kamu sendiri kalau mau lewat backend.
+      </div>
+
+      <label>API Key</label>
+      <div class="input-row">
+        <input id="apiKey" type="password" placeholder="sk-..." />
+        <button class="btn-mini" id="toggleKey" type="button">👁</button>
+      </div>
+      <div class="small">
+        Disimpan di browser (localStorage), <b>jangan di-commit ke GitHub</b>.
+      </div>
+
+      <div class="section-title" style="margin-top:10px;">
+        <span>Sesi & History</span>
+      </div>
+      <div class="chips">
+        <div class="chip active" id="chipModeChat">Chat</div>
+        <div class="chip" id="chipModeReset">Reset percakapan</div>
+        <div class="chip" id="chipClearStorage">Hapus semua data lokal</div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+      <header class="header">
+        <div class="logo">
+          <div class="logo-circle">AI</div>
+          <div class="logo-text">
+            <strong>Multi-Model Chat</strong>
+            <span>Client-side, siap GitHub Pages</span>
+          </div>
+        </div>
+        <button class="theme-toggle" id="themeToggle" title="Dark / Light mode">
+          <span id="themeIcon">🌙</span>
+        </button>
+      </header>
+
+      <div class="chat">
+        <div id="messages" class="messages"></div>
+
+        <div class="input-area">
+          <div class="chat-header-settings" id="modelMeta">
+            Model: <code>gpt-4.1-mini</code> · Temp: <span id="metaTemp">1.0</span>
+          </div>
+          <div class="input-row-main">
+            <textarea id="userInput" placeholder="Ketik pesan di sini, lalu tekan Enter (atau tombol Kirim)."></textarea>
+            <button class="btn-send" id="sendBtn" type="button">
+              <span id="sendLabel">Kirim</span>
+              <span id="sendSpinner" style="display:none;">⏳</span>
+            </button>
+          </div>
+          <div class="small">
+            Tips: tekan <b>Shift+Enter</b> untuk baris baru. Enter untuk kirim.
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast">
+    <span id="toastIcon">✅</span>
+    <span id="toastText">Pesan</span>
+  </div>
+
+  <script>
+    // ======== KONFIG LOCAL STORAGE KEYS ========
+    const STORAGE_KEYS = {
+      THEME: "mmchat-theme",
+      SETTINGS: "mmchat-settings",
+      HISTORY: "mmchat-history"
+    };
+
+    // ======== UTIL TOAST ========
+    const toastEl = document.getElementById("toast");
+    const toastText = document.getElementById("toastText");
+    const toastIcon = document.getElementById("toastIcon");
+
+    function showToast(msg, type = "success", ms = 2200) {
+      toastText.textContent = msg;
+      if (type === "error") {
+        toastIcon.textContent = "⚠️";
+        toastEl.classList.add("toast-error");
+        toastEl.classList.remove("toast-success");
+      } else {
+        toastIcon.textContent = "✅";
+        toastEl.classList.add("toast-success");
+        toastEl.classList.remove("toast-error");
+      }
+      toastEl.classList.add("show");
+      setTimeout(() => toastEl.classList.remove("show"), ms);
+    }
+
+    // ======== THEME (DARK/LIGHT) ========
+    const body = document.body;
+    const themeToggle = document.getElementById("themeToggle");
+    const themeIcon = document.getElementById("themeIcon");
+
+    function applyTheme(theme) {
+      const t = theme === "dark" ? "dark" : "light";
+      body.setAttribute("data-theme", t);
+      themeIcon.textContent = t === "dark" ? "☀️" : "🌙";
+      const meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.setAttribute("content", t === "dark" ? "#020617" : "#2563eb");
+    }
+
+    (function initTheme() {
+      const saved = localStorage.getItem(STORAGE_KEYS.THEME);
+      if (saved === "light" || saved === "dark") {
+        applyTheme(saved);
+      } else {
+        const prefersDark = window.matchMedia &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches;
+        applyTheme(prefersDark ? "dark" : "light");
+      }
+    })();
+
+    themeToggle.addEventListener("click", () => {
+      const cur = body.getAttribute("data-theme") || "light";
+      const next = cur === "light" ? "dark" : "light";
+      applyTheme(next);
+      localStorage.setItem(STORAGE_KEYS.THEME, next);
+    });
+
+    // ======== ELEMENTS ========
+    const modelSelect = document.getElementById("modelSelect");
+    const temperatureInput = document.getElementById("temperature");
+    const tempLabel = document.getElementById("tempLabel");
+    const systemPromptInput = document.getElementById("systemPrompt");
+    const baseUrlInput = document.getElementById("baseUrl");
+    const apiKeyInput = document.getElementById("apiKey");
+    const toggleKeyBtn = document.getElementById("toggleKey");
+
+    const chipModeChat = document.getElementById("chipModeChat");
+    const chipModeReset = document.getElementById("chipModeReset");
+    const chipClearStorage = document.getElementById("chipClearStorage");
+
+    const messagesEl = document.getElementById("messages");
+    const userInput = document.getElementById("userInput");
+    const sendBtn = document.getElementById("sendBtn");
+    const sendLabel = document.getElementById("sendLabel");
+    const sendSpinner = document.getElementById("sendSpinner");
+    const modelMeta = document.getElementById("modelMeta");
+    const metaTemp = document.getElementById("metaTemp");
+    const sessionInfo = document.getElementById("sessionInfo");
+
+    // ======== STATE ========
+    let chatHistory = []; // {role: "user"|"assistant"|"system", content:string}
+    let isSending = false;
+
+    const defaultSettings = {
+      model: "gpt-4.1-mini",
+      temperature: 1,
+      systemPrompt: "",
+      baseUrl: "https://api.openai.com",
+      apiKey: ""
+    };
+
+    function loadSettings() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEYS.SETTINGS);
+        if (!raw) return { ...defaultSettings };
+        const parsed = JSON.parse(raw);
+        return { ...defaultSettings, ...parsed };
+      } catch {
+        return { ...defaultSettings };
+      }
+    }
+
+    function saveSettings(settings) {
+      localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(settings));
+    }
+
+    function loadHistory() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEYS.HISTORY);
+        if (!raw) return [];
+        return JSON.parse(raw);
+      } catch {
+        return [];
+      }
+    }
+
+    function saveHistory() {
+      localStorage.setItem(STORAGE_KEYS.HISTORY, JSON.stringify(chatHistory));
+    }
+
+    function resetHistory() {
+      chatHistory = [];
+      saveHistory();
+      renderMessages();
+    }
+
+    // ======== INIT SETTINGS & HISTORY ========
+    (function initSettingsAndHistory() {
+      const s = loadSettings();
+      modelSelect.value = s.model;
+      temperatureInput.value = s.temperature;
+      tempLabel.textContent = s.temperature.toFixed(1);
+      metaTemp.textContent = s.temperature.toFixed(1);
+      baseUrlInput.value = s.baseUrl || "https://api.openai.com";
+      apiKeyInput.value = s.apiKey || "";
+      systemPromptInput.value = s.systemPrompt || "";
+
+      chatHistory = loadHistory();
+      renderMessages();
+      updateModelMeta();
+      updateSessionInfo();
+    })();
+
+    // ======== HELPERS ========
+    function updateModelMeta() {
+      modelMeta.innerHTML = `Model: <code>${modelSelect.value}</code> · Temp: <span id="metaTemp">${Number(temperatureInput.value).toFixed(1)}</span>`;
+    }
+
+    function updateSessionInfo() {
+      const count = chatHistory.filter(m => m.role === "user").length;
+      sessionInfo.textContent = count ? `${count} pesan` : "baru";
+    }
+
+    function addMessage(role, content) {
+      chatHistory.push({ role, content, ts: Date.now() });
+      saveHistory();
+      renderMessages();
+    }
+
+    function renderMessages() {
+      messagesEl.innerHTML = "";
+      if (systemPromptInput.value.trim()) {
+        const sysDiv = document.createElement("div");
+        sysDiv.className = "message system";
+        sysDiv.textContent = `System prompt aktif: ${systemPromptInput.value.trim()}`;
+        messagesEl.appendChild(sysDiv);
+      }
+
+      chatHistory.forEach(msg => {
+        const div = document.createElement("div");
+        div.className = "message " + msg.role;
+        if (msg.role === "assistant" || msg.role === "user") {
+          const meta = document.createElement("span");
+          meta.className = "bubble-meta";
+          meta.textContent = msg.role === "user" ? "Kamu" : "Asisten";
+          div.appendChild(meta);
+        }
+        const textNode = document.createElement("div");
+        textNode.textContent = msg.content;
+        div.appendChild(textNode);
+        messagesEl.appendChild(div);
+      });
+
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+      updateSessionInfo();
+    }
+
+    function setSendingState(sending) {
+      isSending = sending;
+      sendBtn.disabled = sending;
+      sendLabel.style.display = sending ? "none" : "inline";
+      sendSpinner.style.display = sending ? "inline" : "none";
+    }
+
+    // ======== TEMPERATURE SLIDER ========
+    temperatureInput.addEventListener("input", () => {
+      const t = Number(temperatureInput.value);
+      tempLabel.textContent = t.toFixed(1);
+      metaTemp.textContent = t.toFixed(1);
+      const s = loadSettings();
+      s.temperature = t;
+      saveSettings(s);
+      updateModelMeta();
+    });
+
+    // ======== MODEL SELECT ========
+    modelSelect.addEventListener("change", () => {
+      const s = loadSettings();
+      s.model = modelSelect.value;
+      saveSettings(s);
+      updateModelMeta();
+      showToast("Model diganti ke " + modelSelect.value);
+    });
+
+    // ======== SYSTEM PROMPT ========
+    systemPromptInput.addEventListener("change", () => {
+      const s = loadSettings();
+      s.systemPrompt = systemPromptInput.value;
+      saveSettings(s);
+      renderMessages();
+    });
+
+    // ======== BASE URL & API KEY ========
+    baseUrlInput.addEventListener("change", () => {
+      const s = loadSettings();
+      s.baseUrl = baseUrlInput.value || "https://api.openai.com";
+      saveSettings(s);
+      showToast("Base URL disimpan.");
+    });
+
+    apiKeyInput.addEventListener("change", () => {
+      const s = loadSettings();
+      s.apiKey = apiKeyInput.value || "";
+      saveSettings(s);
+      showToast("API key disimpan di browser.", "success");
+    });
+
+    toggleKeyBtn.addEventListener("click", () => {
+      apiKeyInput.type = apiKeyInput.type === "password" ? "text" : "password";
+    });
+
+    // ======== MODE CHIPS ========
+    chipModeChat.addEventListener("click", () => {
+      chipModeChat.classList.add("active");
+      chipModeReset.classList.remove("active");
+      chipClearStorage.classList.remove("active");
+      showToast("Mode chat.");
+    });
+
+    chipModeReset.addEventListener("click", () => {
+      if (!confirm("Reset percakapan sekarang?")) return;
+      resetHistory();
+      chipModeReset.classList.add("active");
+      chipModeChat.classList.remove("active");
+      chipClearStorage.classList.remove("active");
+      setTimeout(() => {
+        chipModeChat.classList.add("active");
+        chipModeReset.classList.remove("active");
+      }, 800);
+      showToast("Percakapan direset.");
+    });
+
+    chipClearStorage.addEventListener("click", () => {
+      if (!confirm("Hapus semua data lokal (settings + history)?")) return;
+      localStorage.removeItem(STORAGE_KEYS.HISTORY);
+      localStorage.removeItem(STORAGE_KEYS.SETTINGS);
+      chatHistory = [];
+      renderMessages();
+      const s = { ...defaultSettings };
+      saveSettings(s);
+      modelSelect.value = s.model;
+      temperatureInput.value = s.temperature;
+      tempLabel.textContent = s.temperature.toFixed(1);
+      metaTemp.textContent = s.temperature.toFixed(1);
+      baseUrlInput.value = s.baseUrl;
+      apiKeyInput.value = s.apiKey;
+      systemPromptInput.value = s.systemPrompt;
+      chipClearStorage.classList.add("active");
+      chipModeChat.classList.remove("active");
+      chipModeReset.classList.remove("active");
+      setTimeout(() => {
+        chipModeChat.classList.add("active");
+        chipClearStorage.classList.remove("active");
+      }, 800);
+      showToast("Semua data lokal dihapus.", "success");
+    });
+
+    // ======== INPUT & KIRIM ========
+    async function sendMessage() {
+      if (isSending) return;
+
+      const content = userInput.value.trim();
+      if (!content) {
+        showToast("Pesan kosong.", "error");
+        return;
+      }
+
+      const settings = loadSettings();
+      const apiKey = settings.apiKey.trim();
+      const baseUrl = (settings.baseUrl || "https://api.openai.com").replace(/\/+$/, "");
+      const model = settings.model;
+      const temperature = settings.temperature;
+
+      if (!apiKey) {
+        showToast("Isi API key dulu.", "error");
+        return;
+      }
+
+      // update local settings (kalau user baru ganti, tapi belum blur)
+      settings.apiKey = apiKey;
+      settings.baseUrl = baseUrl;
+      saveSettings(settings);
+
+      // tambahkan pesan user ke history & UI
+      addMessage("user", content);
+      userInput.value = "";
+      setSendingState(true);
+
+      try {
+        const messagesPayload = [];
+
+        const systemText = (settings.systemPrompt || "").trim();
+        if (systemText) {
+          messagesPayload.push({ role: "system", content: systemText });
+        }
+
+        chatHistory.forEach(msg => {
+          // kita abaikan field ts
+          messagesPayload.push({ role: msg.role, content: msg.content });
+        });
+
+        const url = `${baseUrl}/v1/chat/completions`;
+
+        const resp = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${apiKey}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            model,
+            messages: messagesPayload,
+            temperature,
+            stream: false
+          })
+        });
+
+        if (!resp.ok) {
+          let errText = `Error ${resp.status}`;
+          try {
+            const data = await resp.json();
+            if (data && data.error && data.error.message) {
+              errText += `: ${data.error.message}`;
+            }
+          } catch {}
+          throw new Error(errText);
+        }
+
+        const data = await resp.json();
+        const assistantMessage = data.choices?.[0]?.message?.content || "(tidak ada konten)";
+        addMessage("assistant", assistantMessage);
+        showToast("Jawaban diterima.", "success");
+
+      } catch (err) {
+        console.error(err);
+        showToast(err.message || "Gagal memanggil API. Cek CORS / proxy / key.", "error");
+      } finally {
+        setSendingState(false);
+      }
+    }
+
+    sendBtn.addEventListener("click", sendMessage);
+
+    userInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    // ======== INFO KECIL: LAST UPDATED ========
+    (function setBuildInfo() {
+      // (opsional) bisa diisi manual kalau mau
+    })();
+  </script>
+</body>
+</html>
