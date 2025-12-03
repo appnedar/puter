@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat AI: Kenapa Manusia Perlu Belajar?</title>
+    <script src="https://js.puter.com/v2/"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 40px);
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(90deg, #4b6cb7 0%, #182848 100%);
+            color: white;
+            padding: 20px 25px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+        
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .message {
+            max-width: 85%;
+            padding: 15px;
+            border-radius: 18px;
+            word-wrap: break-word;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .bot-message {
+            align-self: flex-start;
+            background-color: #e9ecef;
+            border-top-left-radius: 5px;
+            color: #333;
+            border: 1px solid #dee2e6;
+        }
+        
+        .user-message {
+            align-self: flex-end;
+            background: linear-gradient(90deg, #4b6cb7 0%, #182848 100%);
+            color: white;
+            border-top-right-radius: 5px;
+        }
+        
+        .input-container {
+            display: flex;
+            padding: 20px;
+            background-color: white;
+            border-top: 1px solid #eee;
+            gap: 10px;
+        }
+        
+        #userInput {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 50px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+            outline: none;
+        }
+        
+        #userInput:focus {
+            border-color: #4b6cb7;
+        }
+        
+        #sendButton {
+            background: linear-gradient(90deg, #4b6cb7 0%, #182848 100%);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 10px rgba(75, 108, 183, 0.3);
+        }
+        
+        #sendButton:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(75, 108, 183, 0.4);
+        }
+        
+        #sendButton:active {
+            transform: translateY(0);
+        }
+        
+        #sendButton:disabled {
+            background: #a0a0a0;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .typing-indicator {
+            display: none;
+            align-self: flex-start;
+            background-color: #e9ecef;
+            padding: 15px 20px;
+            border-radius: 18px;
+            border-top-left-radius: 5px;
+            color: #666;
+            font-style: italic;
+            border: 1px solid #dee2e6;
+        }
+        
+        .typing-indicator span {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #888;
+            margin: 0 3px;
+            animation: typing 1.4s infinite both;
+        }
+        
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        .initial-question {
+            background-color: #f0f4ff;
+            border-left: 4px solid #4b6cb7;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .info-text {
+            font-size: 0.9rem;
+            color: #666;
+            text-align: center;
+            margin-top: 10px;
+            padding: 0 10px;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-8px); }
+        }
+        
+        /* Responsiveness */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                height: calc(100vh - 20px);
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .message {
+                max-width: 90%;
+            }
+            
+            #sendButton {
+                width: 55px;
+                height: 55px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .header {
+                padding: 15px 20px;
+            }
+            
+            .chat-container {
+                padding: 15px;
+            }
+            
+            .input-container {
+                padding: 15px;
+            }
+            
+            #userInput {
+                padding: 12px 18px;
+            }
+            
+            .message {
+                max-width: 95%;
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Kenapa Manusia Perlu Belajar?</h1>
+            <p>Tanyakan pada AI tentang pentingnya belajar bagi manusia</p>
+        </div>
+        
+        <div class="chat-container" id="chatContainer">
+            <div class="message bot-message">
+                <div class="initial-question">
+                    <strong>Pertanyaan Awal:</strong> Kenapa manusia perlu belajar?
+                </div>
+                <div id="initialAnswer">
+                    <!-- Jawaban awal akan dimuat di sini -->
+                    <p>Memproses jawaban...</p>
+                </div>
+            </div>
+            
+            <div class="typing-indicator" id="typingIndicator">
+                AI sedang mengetik <span></span><span></span><span></span>
+            </div>
+        </div>
+        
+        <div class="input-container">
+            <input type="text" id="userInput" placeholder="Ketik pertanyaan atau pendapat Anda tentang pentingnya belajar..." autocomplete="off">
+            <button id="sendButton" title="Kirim pesan">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+            </button>
+        </div>
+        
+        <div class="info-text">
+            Aplikasi ini menggunakan AI untuk memberikan wawasan tentang pentingnya belajar bagi manusia.
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatContainer = document.getElementById('chatContainer');
+            const userInput = document.getElementById('userInput');
+            const sendButton = document.getElementById('sendButton');
+            const typingIndicator = document.getElementById('typingIndicator');
+            const initialAnswer = document.getElementById('initialAnswer');
+            
+            // Fungsi untuk menambahkan pesan ke chat
+            function addMessage(content, isUser = false) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
+                messageDiv.innerHTML = content;
+                chatContainer.appendChild(messageDiv);
+                
+                // Scroll ke bawah
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+                
+                return messageDiv;
+            }
+            
+            // Fungsi untuk menampilkan indikator typing
+            function showTypingIndicator() {
+                typingIndicator.style.display = 'block';
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+            
+            // Fungsi untuk menyembunyikan indikator typing
+            function hideTypingIndicator() {
+                typingIndicator.style.display = 'none';
+            }
+            
+            // Fungsi untuk mendapatkan jawaban dari AI
+            async function getAIResponse(prompt) {
+                try {
+                    const response = await puter.ai.chat(prompt, {
+                        model: 'gpt-5-nano',
+                    });
+                    return response;
+                } catch (error) {
+                    console.error('Error mendapatkan respons AI:', error);
+                    return "Maaf, terjadi kesalahan saat memproses permintaan Anda. Silakan coba lagi.";
+                }
+            }
+            
+            // Fungsi untuk memproses dan mengirim pesan pengguna
+            async function sendMessage() {
+                const userMessage = userInput.value.trim();
+                
+                if (!userMessage) return;
+                
+                // Tambahkan pesan pengguna ke chat
+                addMessage(userMessage, true);
+                
+                // Kosongkan input
+                userInput.value = '';
+                sendButton.disabled = true;
+                
+                // Tampilkan indikator typing
+                showTypingIndicator();
+                
+                // Dapatkan respons dari AI
+                const aiResponse = await getAIResponse(userMessage);
+                
+                // Sembunyikan indikator typing
+                hideTypingIndicator();
+                
+                // Tambahkan respons AI ke chat
+                addMessage(aiResponse);
+                
+                // Aktifkan kembali tombol kirim
+                sendButton.disabled = false;
+                userInput.focus();
+            }
+            
+            // Load jawaban awal
+            async function loadInitialAnswer() {
+                showTypingIndicator();
+                const initialResponse = await getAIResponse("Kenapa manusia perlu belajar? Berikan penjelasan yang mudah dipahami.");
+                initialAnswer.innerHTML = initialResponse;
+                hideTypingIndicator();
+            }
+            
+            // Event listener untuk tombol kirim
+            sendButton.addEventListener('click', sendMessage);
+            
+            // Event listener untuk tombol Enter
+            userInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+            
+            // Aktifkan/tidak tombol kirim berdasarkan input
+            userInput.addEventListener('input', function() {
+                sendButton.disabled = !userInput.value.trim();
+            });
+            
+            // Fokus ke input saat halaman dimuat
+            userInput.focus();
+            
+            // Muat jawaban awal
+            loadInitialAnswer();
+        });
+    </script>
+</body>
+</html>
