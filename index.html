@@ -1,14 +1,13 @@
 <!doctype html>
-<html lang="id">
+<html lang="id" data-theme="light">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Pilih Mode — Puter</title>
   <meta name="description" content="Pilih antara Puter GPT dan Puter Deep. Antarmuka responsif dan ramah pengguna." />
-
   <style>
     :root{
-      --bg:#f5f7fb;
+      --bg: linear-gradient(180deg,#eef4ff 0%, #f7fbff 100%);
       --card:#ffffff;
       --text:#0f1724;
       --muted:#506070;
@@ -21,22 +20,20 @@
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
     }
 
-    @media (prefers-color-scheme: dark){
-      :root{
-        --bg: linear-gradient(180deg,#071126,#061026);
-        --card: rgba(255,255,255,0.03);
-        --text:#e6eef8;
-        --muted:#a8bdcf;
-        --glass: rgba(255,255,255,0.03);
-        --shadow: 0 8px 30px rgba(2,8,23,0.6);
-      }
-      body { background: var(--bg); }
+    /* Dark theme override via data-theme, bukan media query */
+    :root[data-theme="dark"]{
+      --bg: linear-gradient(180deg,#071126,#061026);
+      --card: rgba(15,23,42,0.96);
+      --text:#e6eef8;
+      --muted:#a8bdcf;
+      --glass: rgba(15,23,42,0.9);
+      --shadow: 0 8px 30px rgba(2,8,23,0.6);
     }
 
     html,body{
       height:100%;
       margin:0;
-      background: linear-gradient(180deg,#eef4ff 0%, #f7fbff 100%);
+      background: var(--bg);
       color:var(--text);
       -webkit-font-smoothing:antialiased;
       -moz-osx-font-smoothing:grayscale;
@@ -50,7 +47,6 @@
       padding:36px 20px;
       box-sizing:border-box;
     }
-
     .card-wrap{
       width:100%;
       max-width:980px;
@@ -62,11 +58,24 @@
       backdrop-filter: blur(6px);
     }
 
+    /* Sedikit gelapin kartu saat dark mode */
+    :root[data-theme="dark"] .card-wrap{
+      background: linear-gradient(180deg, rgba(15,23,42,0.96), rgba(15,23,42,0.9));
+      border: 1px solid rgba(148,163,184,0.4);
+    }
+
     header{
       display:flex;
       gap:18px;
       align-items:center;
       margin-bottom:18px;
+      justify-content:space-between;
+    }
+
+    .header-left{
+      display:flex;
+      align-items:center;
+      gap:18px;
     }
 
     .logo{
@@ -83,17 +92,39 @@
       flex:0 0 56px;
       box-shadow:0 6px 18px rgba(0,100,255,0.14);
     }
-
     h1{
       font-size:20px;
       margin:0;
       line-height:1.05;
     }
-
     p.lead{
       margin:6px 0 0 0;
       color:var(--muted);
       font-size:14px;
+    }
+
+    .theme-toggle{
+      border:none;
+      background: var(--card);
+      width:38px;
+      height:38px;
+      border-radius:999px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      font-size:18px;
+      box-shadow:0 3px 8px rgba(15,23,36,0.18);
+      color:var(--muted);
+      transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+    }
+    .theme-toggle:hover{
+      transform: translateY(-1px);
+      box-shadow:0 6px 14px rgba(15,23,36,0.24);
+    }
+    .theme-toggle:active{
+      transform: translateY(0);
+      box-shadow:0 2px 6px rgba(15,23,36,0.2);
     }
 
     .grid{
@@ -102,7 +133,6 @@
       margin-top:18px;
       flex-wrap:wrap;
     }
-
     .option{
       display:flex;
       flex-direction:column;
@@ -115,28 +145,24 @@
       text-decoration:none;
       color:inherit;
       box-shadow: var(--shadow);
-      transition: transform .18s cubic-bezier(.2,.9,.3,1), box-shadow .18s;
+      transition: transform .18s cubic-bezier(.2,.9,.3,1), box-shadow .18s, border-color .18s;
       border:1px solid rgba(15,23,36,0.04);
     }
-
     .option:hover,
     .option:focus{
       transform: translateY(-6px);
       box-shadow: 0 18px 40px rgba(10,20,40,0.12);
       outline: none;
     }
-
     .option:focus{
       border-color: rgba(0,102,255,0.32);
-      box-shadow: 0 0 0 4px rgba(0,102,255,0.08), 0 18px 40px rgba(10,20,40,0.12);
+      box-shadow: 0 0 0 4px rgba(0,102,255,0.12), 0 18px 40px rgba(10,20,40,0.12);
     }
-
     .option .top{
       display:flex;
       gap:12px;
       align-items:center;
     }
-
     .icon{
       width:56px;
       height:56px;
@@ -147,25 +173,21 @@
       background: linear-gradient(135deg,#fff, rgba(255,255,255,0.7));
       flex:0 0 56px;
     }
-
     .option h3{
       margin:0;
       font-size:16px;
     }
-
     .option p{
       margin:8px 0 0;
       color:var(--muted);
       font-size:13px;
     }
-
     .meta{
       display:flex;
       gap:8px;
       align-items:center;
       margin-top:14px;
     }
-
     .kbd{
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace;
       font-size:12px;
@@ -174,14 +196,15 @@
       border-radius:8px;
       color:var(--muted);
     }
-
+    :root[data-theme="dark"] .kbd{
+      background:rgba(15,23,42,0.9);
+    }
     footer{
       margin-top:20px;
       text-align:center;
       color:var(--muted);
       font-size:13px;
     }
-
     /* Responsive: on very small screens stack vertically */
     @media (max-width:640px){
       .card-wrap{ padding:18px; border-radius:12px; }
@@ -194,13 +217,15 @@
   <div class="wrap">
     <main class="card-wrap" role="main" aria-labelledby="heading">
       <header>
-        <div class="logo" aria-hidden="true">P</div>
-        <div>
-          <h1 id="heading">Selamat datang — Pilih mode</h1>
-          <p class="lead">Pilih salah satu mode untuk memulai: Puter GPT (jawaban cepat berbasis GPT) atau Puter Deep (analisis lebih dalam).</p>
+        <div class="header-left">
+          <div class="logo" aria-hidden="true">P</div>
+          <div>
+            <h1 id="heading">Selamat datang — Pilih mode</h1>
+            <p class="lead">Pilih salah satu mode untuk memulai: Puter GPT (jawaban cepat berbasis GPT) atau Puter Deep (analisis lebih dalam).</p>
+          </div>
         </div>
+        <button id="themeToggle" class="theme-toggle" type="button" aria-label="Toggle dark / light mode">🌙</button>
       </header>
-
       <nav class="grid" aria-label="Menu pilihan mode">
         <a class="option" href="https://appnedar.github.io/puter/index_gpt.html" role="link" aria-label="Buka Puter GPT — Mode GPT">
           <div class="top">
@@ -222,7 +247,6 @@
             <div style="color:var(--muted); font-size:13px">Mode cepat</div>
           </div>
         </a>
-
         <a class="option" href="https://appnedar.github.io/puter/index_deep.html" role="link" aria-label="Buka Puter Deep — Mode Deep">
           <div class="top">
             <div class="icon" aria-hidden="true" style="background:linear-gradient(135deg,#00c6ff,#0066ff);">
@@ -245,20 +269,50 @@
           </div>
         </a>
       </nav>
-
       <footer>
         Tips: atau tekan angka 1 (GPT) atau 2 (Deep) pada keyboard untuk membuka cepat. Halaman ini responsif — coba pada ponsel atau tablet.
       </footer>
     </main>
   </div>
-
   <script>
-    // Keyboard shortcuts: 1 => GPT, 2 => Deep
+    // ====== DARK / LIGHT MODE TOGGLE ======
+    (function(){
+      const THEME_KEY = 'puter-landing-theme';
+      const root = document.documentElement;
+      const btn = document.getElementById('themeToggle');
+
+      function applyTheme(theme){
+        const t = theme === 'dark' ? 'dark' : 'light';
+        root.setAttribute('data-theme', t);
+        if (btn) btn.textContent = t === 'dark' ? '☀️' : '🌙';
+      }
+
+      // initial
+      let saved = null;
+      try { saved = localStorage.getItem(THEME_KEY); } catch(e){}
+      if (saved === 'dark' || saved === 'light') {
+        applyTheme(saved);
+      } else {
+        const prefersDark = window.matchMedia &&
+          window.matchMedia('(prefers-color-scheme: dark)').matches;
+        applyTheme(prefersDark ? 'dark' : 'light');
+      }
+
+      if (btn){
+        btn.addEventListener('click', function(){
+          const current = root.getAttribute('data-theme') || 'light';
+          const next = current === 'light' ? 'dark' : 'light';
+          applyTheme(next);
+          try { localStorage.setItem(THEME_KEY, next); } catch(e){}
+        });
+      }
+    })();
+
+    // ====== Keyboard shortcuts: 1 => GPT, 2 => Deep ======
     document.addEventListener('keydown', function(e){
       // ignore when typing in input/textarea
       const tag = document.activeElement?.tagName?.toLowerCase();
       if (tag === 'input' || tag === 'textarea' || document.activeElement?.isContentEditable) return;
-
       if (e.key === '1') {
         window.location.href = "https://appnedar.github.io/puter/index_gpt.html";
       }
