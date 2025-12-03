@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat AI: Kenapa Manusia Perlu Belajar?</title>
+    <title>Chat AI Model - Multi AI Assistant</title>
     <script src="https://js.puter.com/v2/"></script>
     <style>
         * {
@@ -26,7 +26,7 @@
         
         .container {
             width: 100%;
-            max-width: 800px;
+            max-width: 900px;
             display: flex;
             flex-direction: column;
             height: calc(100vh - 40px);
@@ -40,8 +40,15 @@
             background: linear-gradient(90deg, #4b6cb7 0%, #182848 100%);
             color: white;
             padding: 20px 25px;
-            text-align: center;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
         }
         
         .header h1 {
@@ -53,6 +60,60 @@
         .header p {
             opacity: 0.9;
             font-size: 0.95rem;
+        }
+        
+        .model-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .model-selector label {
+            font-weight: 600;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+        
+        #modelSelect {
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            min-width: 180px;
+            outline: none;
+            transition: all 0.3s;
+        }
+        
+        #modelSelect:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        #modelSelect option {
+            background-color: #182848;
+            color: white;
+            padding: 10px;
+        }
+        
+        .current-model {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .model-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #4CAF50;
         }
         
         .chat-container {
@@ -86,6 +147,14 @@
             background: linear-gradient(90deg, #4b6cb7 0%, #182848 100%);
             color: white;
             border-top-right-radius: 5px;
+        }
+        
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            opacity: 0.8;
         }
         
         .input-container {
@@ -188,6 +257,11 @@
             padding: 0 10px;
         }
         
+        .model-group {
+            font-weight: bold;
+            color: #4b6cb7;
+        }
+        
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -206,6 +280,20 @@
             
             .container {
                 height: calc(100vh - 20px);
+            }
+            
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .model-selector {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            #modelSelect {
+                flex: 1;
             }
             
             .header h1 {
@@ -243,18 +331,80 @@
                 max-width: 95%;
                 padding: 12px;
             }
+            
+            .model-selector {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            #modelSelect {
+                width: 100%;
+                min-width: unset;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>Kenapa Manusia Perlu Belajar?</h1>
-            <p>Tanyakan pada AI tentang pentingnya belajar bagi manusia</p>
+            <div class="header-content">
+                <div class="title-section">
+                    <h1>Chat AI Model</h1>
+                    <p>Multi AI Assistant dengan berbagai model canggih</p>
+                    <div class="current-model">
+                        <span class="model-indicator"></span>
+                        <span id="currentModelText">Model aktif: gpt-5-nano</span>
+                    </div>
+                </div>
+                
+                <div class="model-selector">
+                    <label for="modelSelect">Pilih Model AI:</label>
+                    <select id="modelSelect">
+                        <optgroup label="Claude Models" class="model-group">
+                            <option value="claude-sonnet-4">Claude Sonnet 4</option>
+                            <option value="claude-sonnet-4-5">Claude Sonnet 4.5</option>
+                            <option value="claude-opus-4">Claude Opus 4</option>
+                            <option value="claude-opus-4-1">Claude Opus 4.1</option>
+                            <option value="claude-opus-4-5">Claude Opus 4.5</option>
+                            <option value="claude-haiku-4-5">Claude Haiku 4.5</option>
+                        </optgroup>
+                        <optgroup label="GPT-5 Models" class="model-group">
+                            <option value="gpt-5.1">GPT-5.1</option>
+                            <option value="gpt-5.1-codex">GPT-5.1 Codex</option>
+                            <option value="gpt-5.1-codex-mini">GPT-5.1 Codex Mini</option>
+                            <option value="gpt-5.1-chat-latest">GPT-5.1 Chat Latest</option>
+                            <option value="gpt-5">GPT-5</option>
+                            <option value="gpt-5-mini">GPT-5 Mini</option>
+                            <option value="gpt-5-nano" selected>GPT-5 Nano</option>
+                            <option value="gpt-5-chat-latest">GPT-5 Chat Latest</option>
+                        </optgroup>
+                        <optgroup label="GPT-4 Models" class="model-group">
+                            <option value="gpt-4.1">GPT-4.1</option>
+                            <option value="gpt-4.1-mini">GPT-4.1 Mini</option>
+                            <option value="gpt-4.1-nano">GPT-4.1 Nano</option>
+                            <option value="gpt-4.5-preview">GPT-4.5 Preview</option>
+                            <option value="gpt-4o">GPT-4o</option>
+                            <option value="gpt-4o-mini">GPT-4o Mini</option>
+                        </optgroup>
+                        <optgroup label="OpenAI o-Series" class="model-group">
+                            <option value="o1">o1</option>
+                            <option value="o1-mini">o1 Mini</option>
+                            <option value="o1-pro">o1 Pro</option>
+                            <option value="o3">o3</option>
+                            <option value="o3-mini">o3 Mini</option>
+                            <option value="o4-mini">o4 Mini</option>
+                        </optgroup>
+                    </select>
+                </div>
+            </div>
         </div>
         
         <div class="chat-container" id="chatContainer">
             <div class="message bot-message">
+                <div class="message-header">
+                    <span>AI Assistant</span>
+                    <span id="initialModelLabel">Model: GPT-5 Nano</span>
+                </div>
                 <div class="initial-question">
                     <strong>Pertanyaan Awal:</strong> Kenapa manusia perlu belajar?
                 </div>
@@ -270,7 +420,7 @@
         </div>
         
         <div class="input-container">
-            <input type="text" id="userInput" placeholder="Ketik pertanyaan atau pendapat Anda tentang pentingnya belajar..." autocomplete="off">
+            <input type="text" id="userInput" placeholder="Ketik pertanyaan Anda di sini..." autocomplete="off">
             <button id="sendButton" title="Kirim pesan">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="22" y1="2" x2="11" y2="13"></line>
@@ -280,7 +430,7 @@
         </div>
         
         <div class="info-text">
-            Aplikasi ini menggunakan AI untuk memberikan wawasan tentang pentingnya belajar bagi manusia.
+            Pilih model AI yang berbeda untuk pengalaman chat yang bervariasi. Setiap model memiliki karakteristik dan kemampuan unik.
         </div>
     </div>
 
@@ -291,12 +441,70 @@
             const sendButton = document.getElementById('sendButton');
             const typingIndicator = document.getElementById('typingIndicator');
             const initialAnswer = document.getElementById('initialAnswer');
+            const modelSelect = document.getElementById('modelSelect');
+            const currentModelText = document.getElementById('currentModelText');
+            const initialModelLabel = document.getElementById('initialModelLabel');
+            
+            let currentModel = 'gpt-5-nano';
+            
+            // Fungsi untuk mendapatkan nama model yang lebih mudah dibaca
+            function getModelDisplayName(modelValue) {
+                const modelNames = {
+                    'claude-sonnet-4': 'Claude Sonnet 4',
+                    'claude-sonnet-4-5': 'Claude Sonnet 4.5',
+                    'claude-opus-4': 'Claude Opus 4',
+                    'claude-opus-4-1': 'Claude Opus 4.1',
+                    'claude-opus-4-5': 'Claude Opus 4.5',
+                    'claude-haiku-4-5': 'Claude Haiku 4.5',
+                    'gpt-5.1': 'GPT-5.1',
+                    'gpt-5.1-codex': 'GPT-5.1 Codex',
+                    'gpt-5.1-codex-mini': 'GPT-5.1 Codex Mini',
+                    'gpt-5.1-chat-latest': 'GPT-5.1 Chat Latest',
+                    'gpt-5': 'GPT-5',
+                    'gpt-5-mini': 'GPT-5 Mini',
+                    'gpt-5-nano': 'GPT-5 Nano',
+                    'gpt-5-chat-latest': 'GPT-5 Chat Latest',
+                    'gpt-4.1': 'GPT-4.1',
+                    'gpt-4.1-mini': 'GPT-4.1 Mini',
+                    'gpt-4.1-nano': 'GPT-4.1 Nano',
+                    'gpt-4.5-preview': 'GPT-4.5 Preview',
+                    'gpt-4o': 'GPT-4o',
+                    'gpt-4o-mini': 'GPT-4o Mini',
+                    'o1': 'o1',
+                    'o1-mini': 'o1 Mini',
+                    'o1-pro': 'o1 Pro',
+                    'o3': 'o3',
+                    'o3-mini': 'o3 Mini',
+                    'o4-mini': 'o4 Mini'
+                };
+                
+                return modelNames[modelValue] || modelValue;
+            }
+            
+            // Update model saat dipilih
+            modelSelect.addEventListener('change', function() {
+                currentModel = this.value;
+                currentModelText.textContent = `Model aktif: ${getModelDisplayName(currentModel)}`;
+            });
             
             // Fungsi untuk menambahkan pesan ke chat
-            function addMessage(content, isUser = false) {
+            function addMessage(content, isUser = false, modelUsed = null) {
                 const messageDiv = document.createElement('div');
                 messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
-                messageDiv.innerHTML = content;
+                
+                if (!isUser && modelUsed) {
+                    const modelDisplayName = getModelDisplayName(modelUsed);
+                    messageDiv.innerHTML = `
+                        <div class="message-header">
+                            <span>AI Assistant</span>
+                            <span>Model: ${modelDisplayName}</span>
+                        </div>
+                        <div>${content}</div>
+                    `;
+                } else {
+                    messageDiv.innerHTML = content;
+                }
+                
                 chatContainer.appendChild(messageDiv);
                 
                 // Scroll ke bawah
@@ -317,15 +525,25 @@
             }
             
             // Fungsi untuk mendapatkan jawaban dari AI
-            async function getAIResponse(prompt) {
+            async function getAIResponse(prompt, model = currentModel) {
                 try {
+                    console.log(`Menggunakan model: ${model}`);
+                    
                     const response = await puter.ai.chat(prompt, {
-                        model: 'gpt-5-nano',
+                        model: model,
                     });
-                    return response;
+                    
+                    // Handle different response formats
+                    if (response && response.message && response.message.content && response.message.content[0]) {
+                        return response.message.content[0].text;
+                    } else if (typeof response === 'string') {
+                        return response;
+                    } else {
+                        return "Respons AI diterima dalam format yang tidak terduga.";
+                    }
                 } catch (error) {
                     console.error('Error mendapatkan respons AI:', error);
-                    return "Maaf, terjadi kesalahan saat memproses permintaan Anda. Silakan coba lagi.";
+                    return `Maaf, terjadi kesalahan saat memproses permintaan Anda dengan model ${getModelDisplayName(model)}. Silakan coba lagi atau gunakan model yang berbeda.`;
                 }
             }
             
@@ -346,13 +564,13 @@
                 showTypingIndicator();
                 
                 // Dapatkan respons dari AI
-                const aiResponse = await getAIResponse(userMessage);
+                const aiResponse = await getAIResponse(userMessage, currentModel);
                 
                 // Sembunyikan indikator typing
                 hideTypingIndicator();
                 
                 // Tambahkan respons AI ke chat
-                addMessage(aiResponse);
+                addMessage(aiResponse, false, currentModel);
                 
                 // Aktifkan kembali tombol kirim
                 sendButton.disabled = false;
@@ -362,8 +580,9 @@
             // Load jawaban awal
             async function loadInitialAnswer() {
                 showTypingIndicator();
-                const initialResponse = await getAIResponse("Kenapa manusia perlu belajar? Berikan penjelasan yang mudah dipahami.");
+                const initialResponse = await getAIResponse("Kenapa manusia perlu belajar? Berikan penjelasan yang mudah dipahami dalam 3-4 paragraf.", currentModel);
                 initialAnswer.innerHTML = initialResponse;
+                initialModelLabel.textContent = `Model: ${getModelDisplayName(currentModel)}`;
                 hideTypingIndicator();
             }
             
@@ -384,6 +603,9 @@
             
             // Fokus ke input saat halaman dimuat
             userInput.focus();
+            
+            // Update teks model saat ini
+            currentModelText.textContent = `Model aktif: ${getModelDisplayName(currentModel)}`;
             
             // Muat jawaban awal
             loadInitialAnswer();
