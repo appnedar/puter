@@ -1,615 +1,753 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat AI Model - Multi AI Assistant</title>
+    <title>Multi-Model AI Chat</title>
     <script src="https://js.puter.com/v2/"></script>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        
+
         body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            color: #333;
-            line-height: 1.6;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            color: #333;
         }
-        
+
         .container {
-            width: 100%;
-            max-width: 900px;
-            display: flex;
-            flex-direction: column;
-            height: calc(100vh - 40px);
-            background-color: white;
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
             border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             overflow: hidden;
         }
-        
-        .header {
-            background: linear-gradient(90deg, #4b6cb7 0%, #182848 100%);
+
+        header {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
             color: white;
-            padding: 20px 25px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            text-align: center;
         }
-        
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-        
-        .header h1 {
-            font-size: 1.8rem;
-            margin-bottom: 5px;
-            font-weight: 700;
-        }
-        
-        .header p {
-            opacity: 0.9;
-            font-size: 0.95rem;
-        }
-        
-        .model-selector {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        
-        .model-selector label {
-            font-weight: 600;
-            font-size: 0.9rem;
-            white-space: nowrap;
-        }
-        
-        #modelSelect {
-            padding: 8px 15px;
-            border-radius: 20px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            background-color: rgba(255, 255, 255, 0.1);
-            color: white;
-            font-weight: 500;
-            cursor: pointer;
-            min-width: 180px;
-            outline: none;
-            transition: all 0.3s;
-        }
-        
-        #modelSelect:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-            border-color: rgba(255, 255, 255, 0.5);
-        }
-        
-        #modelSelect option {
-            background-color: #182848;
-            color: white;
-            padding: 10px;
-        }
-        
-        .current-model {
-            font-size: 0.85rem;
-            opacity: 0.9;
-            margin-top: 5px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .model-indicator {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background-color: #4CAF50;
-        }
-        
-        .chat-container {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-            background-color: #f9f9f9;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        
-        .message {
-            max-width: 85%;
-            padding: 15px;
-            border-radius: 18px;
-            word-wrap: break-word;
-            animation: fadeIn 0.3s ease-out;
-        }
-        
-        .bot-message {
-            align-self: flex-start;
-            background-color: #e9ecef;
-            border-top-left-radius: 5px;
-            color: #333;
-            border: 1px solid #dee2e6;
-        }
-        
-        .user-message {
-            align-self: flex-end;
-            background: linear-gradient(90deg, #4b6cb7 0%, #182848 100%);
-            color: white;
-            border-top-right-radius: 5px;
-        }
-        
-        .message-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            font-size: 0.85rem;
-            opacity: 0.8;
-        }
-        
-        .input-container {
-            display: flex;
-            padding: 20px;
-            background-color: white;
-            border-top: 1px solid #eee;
-            gap: 10px;
-        }
-        
-        #userInput {
-            flex: 1;
-            padding: 15px 20px;
-            border: 2px solid #e0e0e0;
-            border-radius: 50px;
-            font-size: 1rem;
-            transition: border-color 0.3s;
-            outline: none;
-        }
-        
-        #userInput:focus {
-            border-color: #4b6cb7;
-        }
-        
-        #sendButton {
-            background: linear-gradient(90deg, #4b6cb7 0%, #182848 100%);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            cursor: pointer;
+
+        header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.3rem;
-            transition: transform 0.2s, box-shadow 0.2s;
-            box-shadow: 0 4px 10px rgba(75, 108, 183, 0.3);
+            gap: 10px;
         }
-        
-        #sendButton:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(75, 108, 183, 0.4);
+
+        .model-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+            margin-top: 15px;
         }
-        
-        #sendButton:active {
-            transform: translateY(0);
+
+        .model-selector label {
+            font-weight: 600;
+            font-size: 1.1rem;
         }
-        
-        #sendButton:disabled {
-            background: #a0a0a0;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-        
-        .typing-indicator {
-            display: none;
-            align-self: flex-start;
-            background-color: #e9ecef;
-            padding: 15px 20px;
-            border-radius: 18px;
-            border-top-left-radius: 5px;
-            color: #666;
-            font-style: italic;
-            border: 1px solid #dee2e6;
-        }
-        
-        .typing-indicator span {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background-color: #888;
-            margin: 0 3px;
-            animation: typing 1.4s infinite both;
-        }
-        
-        .typing-indicator span:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-        
-        .typing-indicator span:nth-child(3) {
-            animation-delay: 0.4s;
-        }
-        
-        .initial-question {
-            background-color: #f0f4ff;
-            border-left: 4px solid #4b6cb7;
-            padding: 15px;
+
+        #ai-model {
+            padding: 10px 20px;
+            border: none;
             border-radius: 10px;
-            margin-bottom: 10px;
+            font-size: 1rem;
+            background: white;
+            color: #333;
+            min-width: 250px;
+            cursor: pointer;
         }
-        
-        .info-text {
-            font-size: 0.9rem;
-            color: #666;
-            text-align: center;
-            margin-top: 10px;
-            padding: 0 10px;
+
+        .btn-secondary {
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.2);
+            border: 2px solid white;
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
         }
-        
-        .model-group {
-            font-weight: bold;
-            color: #4b6cb7;
+
+        .btn-secondary:hover {
+            background: white;
+            color: #4f46e5;
         }
-        
+
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 600px;
+        }
+
+        .chat-history {
+            flex: 1;
+            padding: 25px;
+            overflow-y: auto;
+            background: #f8fafc;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .message {
+            display: flex;
+            gap: 15px;
+            animation: fadeIn 0.3s ease;
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        
+
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message.user .content {
+            background: #4f46e5;
+            color: white;
+            border-radius: 15px 15px 5px 15px;
+        }
+
+        .message.ai .content {
+            background: white;
+            color: #333;
+            border: 1px solid #e2e8f0;
+            border-radius: 15px 15px 15px 5px;
+            position: relative;
+            min-height: 60px;
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 5px;
+            padding: 10px;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #7c3aed;
+            border-radius: 50%;
+            animation: typing 1.4s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+
         @keyframes typing {
-            0%, 60%, 100% { transform: translateY(0); }
-            30% { transform: translateY(-8px); }
+            0%, 80%, 100% { transform: scale(0); opacity: 0.5; }
+            40% { transform: scale(1); opacity: 1; }
         }
-        
-        /* Responsiveness */
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        .message.user .avatar {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .content {
+            padding: 15px 20px;
+            max-width: 70%;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            line-height: 1.5;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .content strong {
+            display: block;
+            margin-bottom: 5px;
+            color: #7c3aed;
+        }
+
+        .model-tag {
+            display: inline-block;
+            background: #e0e7ff;
+            color: #4f46e5;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin-left: 8px;
+            font-weight: normal;
+        }
+
+        .input-area {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        textarea {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            resize: vertical;
+            min-height: 60px;
+            max-height: 150px;
+            font-family: inherit;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #4f46e5;
+        }
+
+        .btn-primary {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            align-self: flex-end;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .features {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-feature {
+            padding: 10px 20px;
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-feature:hover {
+            background: #e2e8f0;
+            transform: translateY(-1px);
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: #f8fafc;
+            color: #64748b;
+            font-size: 0.9rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        footer p {
+            margin: 5px 0;
+        }
+
+        .status {
+            text-align: center;
+            padding: 10px;
+            background: #fef3c7;
+            color: #92400e;
+            font-size: 0.9rem;
+            border-radius: 8px;
+            margin: 0 20px 20px 20px;
+        }
+
+        /* Scrollbar styling */
+        .chat-history::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chat-history::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .chat-history::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+
+        .chat-history::-webkit-scrollbar-thumb:hover {
+            background: #a1a1a1;
+        }
+
+        /* Code styling */
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+        }
+
+        /* Responsive design */
         @media (max-width: 768px) {
-            body {
-                padding: 10px;
-            }
-            
             .container {
-                height: calc(100vh - 20px);
-            }
-            
-            .header-content {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            
-            .model-selector {
-                width: 100%;
-                justify-content: space-between;
-            }
-            
-            #modelSelect {
-                flex: 1;
-            }
-            
-            .header h1 {
-                font-size: 1.5rem;
-            }
-            
-            .message {
-                max-width: 90%;
-            }
-            
-            #sendButton {
-                width: 55px;
-                height: 55px;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .header {
-                padding: 15px 20px;
+                margin: 10px;
+                border-radius: 15px;
             }
             
             .chat-container {
-                padding: 15px;
+                height: 500px;
             }
             
-            .input-container {
-                padding: 15px;
-            }
-            
-            #userInput {
-                padding: 12px 18px;
-            }
-            
-            .message {
-                max-width: 95%;
-                padding: 12px;
+            .content {
+                max-width: 85%;
             }
             
             .model-selector {
                 flex-direction: column;
-                align-items: flex-start;
             }
             
-            #modelSelect {
+            .input-wrapper {
+                flex-direction: column;
+            }
+            
+            .btn-primary {
                 width: 100%;
-                min-width: unset;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <div class="header-content">
-                <div class="title-section">
-                    <h1>Chat AI Model</h1>
-                    <p>Multi AI Assistant dengan berbagai model canggih</p>
-                    <div class="current-model">
-                        <span class="model-indicator"></span>
-                        <span id="currentModelText">Model aktif: gpt-5-nano</span>
+        <header>
+            <h1><i class="fas fa-robot"></i> Multi-Model AI Chat</h1>
+            <div class="model-selector">
+                <label for="ai-model">Select AI Model:</label>
+                <select id="ai-model">
+                    <option value="gpt-4o">🤖 GPT-4o (OpenAI)</option>
+                    <option value="claude-sonnet-4-5">🧠 Claude 3.5 Sonnet (Anthropic)</option>
+                    <option value="gemini-2.0-flash">💎 Gemini 2.0 Flash (Google)</option>
+                    <option value="llama-3.3-70b">🦙 Llama 3.3 70B (Meta)</option>
+                    <option value="deepseek-coder">👨‍💻 DeepSeek Coder</option>
+                </select>
+                <button id="clear-chat" class="btn-secondary">
+                    <i class="fas fa-trash"></i> Clear Chat
+                </button>
+            </div>
+        </header>
+
+        <div class="status" id="status">
+            ✅ Connected to Puter.ai API. Select a model and start chatting!
+        </div>
+
+        <div class="chat-container">
+            <div class="chat-history" id="chat-history">
+                <div class="message ai">
+                    <div class="avatar">AI</div>
+                    <div class="content">
+                        <strong>Welcome to Multi-Model AI Chat <span class="model-tag">System</span></strong>
+                        I'm connected to Puter.ai's powerful AI models. Select a model from the dropdown to chat with different AI personalities! Each model has its own strengths:
+                        <br><br>
+                        • <strong>GPT-4o</strong>: Best for general conversations and reasoning<br>
+                        • <strong>Claude 3.5</strong>: Excellent for creative writing and analysis<br>
+                        • <strong>Gemini Flash</strong>: Fast and great for research<br>
+                        • <strong>Llama 3.3</strong>: Open-source powerhouse<br>
+                        • <strong>DeepSeek Coder</strong>: Specialized in programming help
                     </div>
                 </div>
-                
-                <div class="model-selector">
-                    <label for="modelSelect">Pilih Model AI:</label>
-                    <select id="modelSelect">
-                        <optgroup label="Claude Models" class="model-group">
-                            <option value="claude-sonnet-4">Claude Sonnet 4</option>
-                            <option value="claude-sonnet-4-5">Claude Sonnet 4.5</option>
-                            <option value="claude-opus-4">Claude Opus 4</option>
-                            <option value="claude-opus-4-1">Claude Opus 4.1</option>
-                            <option value="claude-opus-4-5">Claude Opus 4.5</option>
-                            <option value="claude-haiku-4-5">Claude Haiku 4.5</option>
-                        </optgroup>
-                        <optgroup label="GPT-5 Models" class="model-group">
-                            <option value="gpt-5.1">GPT-5.1</option>
-                            <option value="gpt-5.1-codex">GPT-5.1 Codex</option>
-                            <option value="gpt-5.1-codex-mini">GPT-5.1 Codex Mini</option>
-                            <option value="gpt-5.1-chat-latest">GPT-5.1 Chat Latest</option>
-                            <option value="gpt-5">GPT-5</option>
-                            <option value="gpt-5-mini">GPT-5 Mini</option>
-                            <option value="gpt-5-nano" selected>GPT-5 Nano</option>
-                            <option value="gpt-5-chat-latest">GPT-5 Chat Latest</option>
-                        </optgroup>
-                        <optgroup label="GPT-4 Models" class="model-group">
-                            <option value="gpt-4.1">GPT-4.1</option>
-                            <option value="gpt-4.1-mini">GPT-4.1 Mini</option>
-                            <option value="gpt-4.1-nano">GPT-4.1 Nano</option>
-                            <option value="gpt-4.5-preview">GPT-4.5 Preview</option>
-                            <option value="gpt-4o">GPT-4o</option>
-                            <option value="gpt-4o-mini">GPT-4o Mini</option>
-                        </optgroup>
-                        <optgroup label="OpenAI o-Series" class="model-group">
-                            <option value="o1">o1</option>
-                            <option value="o1-mini">o1 Mini</option>
-                            <option value="o1-pro">o1 Pro</option>
-                            <option value="o3">o3</option>
-                            <option value="o3-mini">o3 Mini</option>
-                            <option value="o4-mini">o4 Mini</option>
-                        </optgroup>
-                    </select>
+            </div>
+
+            <div class="input-area">
+                <div class="input-wrapper">
+                    <textarea 
+                        id="user-input" 
+                        placeholder="Type your message here... (Shift+Enter for new line, Enter to send)"
+                        rows="3"
+                    ></textarea>
+                    <button id="send-btn" class="btn-primary">
+                        <i class="fas fa-paper-plane"></i> Send
+                    </button>
+                </div>
+                <div class="features">
+                    <button id="example-btn" class="btn-feature">
+                        <i class="fas fa-lightbulb"></i> Example Question
+                    </button>
+                    <button id="code-btn" class="btn-feature">
+                        <i class="fas fa-code"></i> Code Help
+                    </button>
+                    <button id="explain-btn" class="btn-feature">
+                        <i class="fas fa-question-circle"></i> Explain Simply
+                    </button>
                 </div>
             </div>
         </div>
-        
-        <div class="chat-container" id="chatContainer">
-            <div class="message bot-message">
-                <div class="message-header">
-                    <span>AI Assistant</span>
-                    <span id="initialModelLabel">Model: GPT-5 Nano</span>
-                </div>
-                <div class="initial-question">
-                    <strong>Pertanyaan Awal:</strong> Kenapa manusia perlu belajar?
-                </div>
-                <div id="initialAnswer">
-                    <!-- Jawaban awal akan dimuat di sini -->
-                    <p>Memproses jawaban...</p>
-                </div>
-            </div>
-            
-            <div class="typing-indicator" id="typingIndicator">
-                AI sedang mengetik <span></span><span></span><span></span>
-            </div>
-        </div>
-        
-        <div class="input-container">
-            <input type="text" id="userInput" placeholder="Ketik pertanyaan Anda di sini..." autocomplete="off">
-            <button id="sendButton" title="Kirim pesan">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="22" y1="2" x2="11" y2="13"></line>
-                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                </svg>
-            </button>
-        </div>
-        
-        <div class="info-text">
-            Pilih model AI yang berbeda untuk pengalaman chat yang bervariasi. Setiap model memiliki karakteristik dan kemampuan unik.
-        </div>
+
+        <footer>
+            <p>Powered by <a href="https://puter.ai" target="_blank">Puter.ai API</a> • Deployable on GitHub Pages</p>
+            <p>Note: This demo uses Puter.ai's free tier API</p>
+        </footer>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const chatContainer = document.getElementById('chatContainer');
-            const userInput = document.getElementById('userInput');
-            const sendButton = document.getElementById('sendButton');
-            const typingIndicator = document.getElementById('typingIndicator');
-            const initialAnswer = document.getElementById('initialAnswer');
-            const modelSelect = document.getElementById('modelSelect');
-            const currentModelText = document.getElementById('currentModelText');
-            const initialModelLabel = document.getElementById('initialModelLabel');
-            
-            let currentModel = 'gpt-5-nano';
-            
-            // Fungsi untuk mendapatkan nama model yang lebih mudah dibaca
-            function getModelDisplayName(modelValue) {
-                const modelNames = {
-                    'claude-sonnet-4': 'Claude Sonnet 4',
-                    'claude-sonnet-4-5': 'Claude Sonnet 4.5',
-                    'claude-opus-4': 'Claude Opus 4',
-                    'claude-opus-4-1': 'Claude Opus 4.1',
-                    'claude-opus-4-5': 'Claude Opus 4.5',
-                    'claude-haiku-4-5': 'Claude Haiku 4.5',
-                    'gpt-5.1': 'GPT-5.1',
-                    'gpt-5.1-codex': 'GPT-5.1 Codex',
-                    'gpt-5.1-codex-mini': 'GPT-5.1 Codex Mini',
-                    'gpt-5.1-chat-latest': 'GPT-5.1 Chat Latest',
-                    'gpt-5': 'GPT-5',
-                    'gpt-5-mini': 'GPT-5 Mini',
-                    'gpt-5-nano': 'GPT-5 Nano',
-                    'gpt-5-chat-latest': 'GPT-5 Chat Latest',
-                    'gpt-4.1': 'GPT-4.1',
-                    'gpt-4.1-mini': 'GPT-4.1 Mini',
-                    'gpt-4.1-nano': 'GPT-4.1 Nano',
-                    'gpt-4.5-preview': 'GPT-4.5 Preview',
-                    'gpt-4o': 'GPT-4o',
-                    'gpt-4o-mini': 'GPT-4o Mini',
-                    'o1': 'o1',
-                    'o1-mini': 'o1 Mini',
-                    'o1-pro': 'o1 Pro',
-                    'o3': 'o3',
-                    'o3-mini': 'o3 Mini',
-                    'o4-mini': 'o4 Mini'
-                };
-                
-                return modelNames[modelValue] || modelValue;
+        // Font Awesome icons (using CDN in production, but embedding for single file)
+        const style = document.createElement('style');
+        style.textContent = `
+            .fas {
+                font-family: 'Font Awesome 6 Free';
+                font-weight: 900;
             }
-            
-            // Update model saat dipilih
-            modelSelect.addEventListener('change', function() {
-                currentModel = this.value;
-                currentModelText.textContent = `Model aktif: ${getModelDisplayName(currentModel)}`;
-            });
-            
-            // Fungsi untuk menambahkan pesan ke chat
-            function addMessage(content, isUser = false, modelUsed = null) {
-                const messageDiv = document.createElement('div');
-                messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
-                
-                if (!isUser && modelUsed) {
-                    const modelDisplayName = getModelDisplayName(modelUsed);
-                    messageDiv.innerHTML = `
-                        <div class="message-header">
-                            <span>AI Assistant</span>
-                            <span>Model: ${modelDisplayName}</span>
-                        </div>
-                        <div>${content}</div>
-                    `;
-                } else {
-                    messageDiv.innerHTML = content;
+            .fa-robot:before { content: "\\f544"; }
+            .fa-trash:before { content: "\\f2ed"; }
+            .fa-paper-plane:before { content: "\\f1d8"; }
+            .fa-lightbulb:before { content: "\\f0eb"; }
+            .fa-code:before { content: "\\f121"; }
+            .fa-question-circle:before { content: "\\f059"; }
+            .fa-spinner:before { content: "\\f110"; }
+        `;
+        document.head.appendChild(style);
+
+        // DOM Elements
+        const chatHistory = document.getElementById('chat-history');
+        const userInput = document.getElementById('user-input');
+        const sendBtn = document.getElementById('send-btn');
+        const aiModelSelect = document.getElementById('ai-model');
+        const clearChatBtn = document.getElementById('clear-chat');
+        const exampleBtn = document.getElementById('example-btn');
+        const codeBtn = document.getElementById('code-btn');
+        const explainBtn = document.getElementById('explain-btn');
+        const status = document.getElementById('status');
+
+        // Model display names
+        const modelNames = {
+            'gpt-4o': 'GPT-4o (OpenAI)',
+            'claude-sonnet-4-5': 'Claude 3.5 Sonnet (Anthropic)',
+            'gemini-2.0-flash': 'Gemini 2.0 Flash (Google)',
+            'llama-3.3-70b': 'Llama 3.3 70B (Meta)',
+            'deepseek-coder': 'DeepSeek Coder'
+        };
+
+        let isGenerating = false;
+        let currentStreamController = null;
+
+        // Initialize Puter.ai
+        async function initPuterAI() {
+            try {
+                // Check if Puter.ai is available
+                if (typeof puter === 'undefined') {
+                    throw new Error('Puter.ai SDK not loaded');
                 }
                 
-                chatContainer.appendChild(messageDiv);
+                status.textContent = '✅ Connected to Puter.ai API. Ready to chat!';
+                status.style.background = '#d1fae5';
+                status.style.color = '#065f46';
                 
-                // Scroll ke bawah
-                chatContainer.scrollTop = chatContainer.scrollHeight;
+                // Load saved messages
+                const savedMessages = localStorage.getItem('aiChatMessages');
+                if (savedMessages) {
+                    chatHistory.innerHTML = savedMessages;
+                }
+            } catch (error) {
+                console.error('Error initializing Puter.ai:', error);
+                status.textContent = '⚠️ Error connecting to Puter.ai. Please refresh the page.';
+                status.style.background = '#fee2e2';
+                status.style.color = '#991b1b';
+                sendBtn.disabled = true;
+            }
+        }
+
+        // Save messages to localStorage
+        function saveMessages() {
+            localStorage.setItem('aiChatMessages', chatHistory.innerHTML);
+        }
+
+        // Add message to chat
+        function addMessage(content, isUser = false, model = null) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user' : 'ai'}`;
+            
+            const avatarDiv = document.createElement('div');
+            avatarDiv.className = 'avatar';
+            avatarDiv.textContent = isUser ? 'You' : 'AI';
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'content';
+            
+            if (!isUser && model) {
+                const modelName = document.createElement('strong');
+                modelName.innerHTML = `${modelNames[model]} <span class="model-tag">${model}</span>`;
+                contentDiv.appendChild(modelName);
+            }
+            
+            // Format code blocks
+            const formattedContent = formatCodeBlocks(content);
+            contentDiv.innerHTML += formattedContent;
+            
+            messageDiv.appendChild(avatarDiv);
+            messageDiv.appendChild(contentDiv);
+            chatHistory.appendChild(messageDiv);
+            
+            // Scroll to bottom
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+            
+            // Save to localStorage
+            saveMessages();
+            
+            return contentDiv;
+        }
+
+        // Add typing indicator
+        function addTypingIndicator(model) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message ai';
+            messageDiv.id = 'typing-indicator';
+            
+            const avatarDiv = document.createElement('div');
+            avatarDiv.className = 'avatar';
+            avatarDiv.textContent = 'AI';
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'content';
+            
+            const modelName = document.createElement('strong');
+            modelName.innerHTML = `${modelNames[model]} <span class="model-tag">${model}</span>`;
+            contentDiv.appendChild(modelName);
+            
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'typing-indicator';
+            typingDiv.innerHTML = `
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+            `;
+            
+            contentDiv.appendChild(typingDiv);
+            messageDiv.appendChild(avatarDiv);
+            messageDiv.appendChild(contentDiv);
+            chatHistory.appendChild(messageDiv);
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+            
+            return messageDiv;
+        }
+
+        // Remove typing indicator
+        function removeTypingIndicator() {
+            const indicator = document.getElementById('typing-indicator');
+            if (indicator) {
+                indicator.remove();
+            }
+        }
+
+        // Format code blocks
+        function formatCodeBlocks(text) {
+            // Simple code block detection and formatting
+            return text.replace(/```(\w+)?\n([\s\S]*?)```/g, (match, lang, code) => {
+                const language = lang || 'code';
+                return `<div class="code-block"><strong>${language}</strong>\n${code}</div>`;
+            });
+        }
+
+        // Send message to Puter.ai API
+        async function sendToAI(message, model) {
+            try {
+                // Add typing indicator
+                const typingIndicator = addTypingIndicator(model);
                 
-                return messageDiv;
-            }
-            
-            // Fungsi untuk menampilkan indikator typing
-            function showTypingIndicator() {
-                typingIndicator.style.display = 'block';
-                chatContainer.scrollTop = chatContainer.scrollHeight;
-            }
-            
-            // Fungsi untuk menyembunyikan indikator typing
-            function hideTypingIndicator() {
-                typingIndicator.style.display = 'none';
-            }
-            
-            // Fungsi untuk mendapatkan jawaban dari AI
-            async function getAIResponse(prompt, model = currentModel) {
-                try {
-                    console.log(`Menggunakan model: ${model}`);
-                    
-                    const response = await puter.ai.chat(prompt, {
-                        model: model,
-                    });
-                    
-                    // Handle different response formats
-                    if (response && response.message && response.message.content && response.message.content[0]) {
-                        return response.message.content[0].text;
-                    } else if (typeof response === 'string') {
-                        return response;
-                    } else {
-                        return "Respons AI diterima dalam format yang tidak terduga.";
+                // Prepare the request
+                const response = await puter.ai.chat(message, {
+                    model: model,
+                    stream: true
+                });
+                
+                // Remove typing indicator
+                removeTypingIndicator();
+                
+                // Create AI message container
+                const aiMessageDiv = document.createElement('div');
+                aiMessageDiv.className = 'message ai';
+                
+                const avatarDiv = document.createElement('div');
+                avatarDiv.className = 'avatar';
+                avatarDiv.textContent = 'AI';
+                
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'content';
+                
+                const modelName = document.createElement('strong');
+                modelName.innerHTML = `${modelNames[model]} <span class="model-tag">${model}</span>`;
+                contentDiv.appendChild(modelName);
+                
+                aiMessageDiv.appendChild(avatarDiv);
+                aiMessageDiv.appendChild(contentDiv);
+                chatHistory.appendChild(aiMessageDiv);
+                
+                // Stream the response
+                let fullResponse = '';
+                for await (const part of response) {
+                    if (part?.text) {
+                        fullResponse += part.text;
+                        contentDiv.innerHTML = `${modelName.outerHTML}${formatCodeBlocks(fullResponse)}`;
+                        chatHistory.scrollTop = chatHistory.scrollHeight;
                     }
-                } catch (error) {
-                    console.error('Error mendapatkan respons AI:', error);
-                    return `Maaf, terjadi kesalahan saat memproses permintaan Anda dengan model ${getModelDisplayName(model)}. Silakan coba lagi atau gunakan model yang berbeda.`;
                 }
+                
+                // Save messages after complete response
+                saveMessages();
+                
+            } catch (error) {
+                console.error('Error calling Puter.ai:', error);
+                removeTypingIndicator();
+                
+                // Show error message
+                addMessage(`Sorry, I encountered an error: ${error.message}. Please try again.`, false, model);
+                
+                status.textContent = '⚠️ Error connecting to AI service. Please try again.';
+                status.style.background = '#fee2e2';
+                status.style.color = '#991b1b';
+                
+                setTimeout(() => {
+                    status.textContent = '✅ Connected to Puter.ai API. Ready to chat!';
+                    status.style.background = '#d1fae5';
+                    status.style.color = '#065f46';
+                }, 3000);
+            } finally {
+                isGenerating = false;
+                sendBtn.disabled = false;
+                sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Send';
             }
+        }
+
+        // Handle sending messages
+        async function sendMessage() {
+            const message = userInput.value.trim();
+            if (!message || isGenerating) return;
             
-            // Fungsi untuk memproses dan mengirim pesan pengguna
-            async function sendMessage() {
-                const userMessage = userInput.value.trim();
-                
-                if (!userMessage) return;
-                
-                // Tambahkan pesan pengguna ke chat
-                addMessage(userMessage, true);
-                
-                // Kosongkan input
-                userInput.value = '';
-                sendButton.disabled = true;
-                
-                // Tampilkan indikator typing
-                showTypingIndicator();
-                
-                // Dapatkan respons dari AI
-                const aiResponse = await getAIResponse(userMessage, currentModel);
-                
-                // Sembunyikan indikator typing
-                hideTypingIndicator();
-                
-                // Tambahkan respons AI ke chat
-                addMessage(aiResponse, false, currentModel);
-                
-                // Aktifkan kembali tombol kirim
-                sendButton.disabled = false;
-                userInput.focus();
-            }
+            // Get selected model
+            const selectedModel = aiModelSelect.value;
             
-            // Load jawaban awal
-            async function loadInitialAnswer() {
-                showTypingIndicator();
-                const initialResponse = await getAIResponse("Kenapa manusia perlu belajar? Berikan penjelasan yang mudah dipahami dalam 3-4 paragraf.", currentModel);
-                initialAnswer.innerHTML = initialResponse;
-                initialModelLabel.textContent = `Model: ${getModelDisplayName(currentModel)}`;
-                hideTypingIndicator();
-            }
+            // Add user message
+            addMessage(message, true);
             
-            // Event listener untuk tombol kirim
-            sendButton.addEventListener('click', sendMessage);
-            
-            // Event listener untuk tombol Enter
-            userInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    sendMessage();
-                }
-            });
-            
-            // Aktifkan/tidak tombol kirim berdasarkan input
-            userInput.addEventListener('input', function() {
-                sendButton.disabled = !userInput.value.trim();
-            });
-            
-            // Fokus ke input saat halaman dimuat
+            // Clear input
+            userInput.value = '';
             userInput.focus();
             
-            // Update teks model saat ini
-            currentModelText.textContent = `Model aktif: ${getModelDisplayName(currentModel)}`;
+            // Disable send button during generation
+            isGenerating = true;
+            sendBtn.disabled = true;
+            sendBtn.innerHTML = '<i class="fas fa-spinner"></i> Thinking...';
             
-            // Muat jawaban awal
-            loadInitialAnswer();
+            // Send to AI
+            await sendToAI(message, selectedModel);
+        }
+
+        // Event Listeners
+        sendBtn.addEventListener('click', sendMessage);
+
+        userInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
         });
+
+        clearChatBtn.addEventListener('click', () => {
+            if (confirm('Clear all chat messages?')) {
+                chatHistory.innerHTML = `
+                    <div class="message ai">
+                        <div class="avatar">AI</div>
+                        <div class="content">
+                            <strong>Welcome to Multi-Model AI Chat <span class="model-tag">System</span></strong>
+                            Chat cleared! Select a model from the dropdown and start a new conversation.
+                        </div>
+                    </div>
+                `;
+                saveMessages();
+            }
+        });
+
+        exampleBtn.addEventListener('click', () => {
+            const examples = [
+                "Explain quantum computing in simple terms",
+                "Write a Python function to reverse a string",
+                "What are the ethical implications of AI?",
+                "Create a short story about a robot learning to paint",
+                "Compare the strengths of different AI models"
+            ];
+            const randomExample = examples[Math.floor(Math.random() * examples.length)];
+            userInput.value = randomExample;
+            userInput.focus();
+        });
+
+        codeBtn.addEventListener('click', () => {
+            userInput.value = "Write a JavaScript function that fetches data from an API and displays it in a table";
+            userInput.focus();
+        });
+
+        explainBtn.addEventListener('click', () => {
+            userInput.value = "Explain neural networks like I'm 10 years old";
+            userInput.focus();
+        });
+
+        // Cancel generation on model change
+        aiModelSelect.addEventListener('change', () => {
+            if (isGenerating) {
+                if (confirm('Switch models? This will cancel the current response.')) {
+                    isGenerating = false;
+                    sendBtn.disabled = false;
+                    sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Send';
+                    removeTypingIndicator();
+                } else {
+                    // Revert selection
+                    aiModelSelect.value = aiModelSelect.dataset.previousValue || 'gpt-4o';
+                }
+            }
+            aiModelSelect.dataset.previousValue = aiModelSelect.value;
+        });
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', initPuterAI);
     </script>
 </body>
 </html>
